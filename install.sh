@@ -170,14 +170,24 @@ install_x-ui() {
     wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/qiangdonggua/x-ui/main/x-ui.sh
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
-    config_after_install
+
+    # 创建正确的软链接
+    ln -s /usr/local/x-ui/x-ui.sh /usr/bin/x-ui
+
+    # 设置默认用户名、密码和端口
+    config_account="csh0101"
+    config_password="csh031027"
+    config_port="8088"
+
+    echo -e "${yellow}Initializing, please wait...${plain}"
+    /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
+    echo -e "${yellow}Account name and password set successfully!${plain}"
+    /usr/local/x-ui/x-ui setting -port ${config_port}
+    echo -e "${yellow}Panel port set successfully!${plain}"
+
+    /usr/local/x-ui/x-ui migrate
     rm /usr/local/x-ui-backup/ -rf
-    #echo -e "If it is a new installation, the default web port is ${green}54321${plain}, The username and password are ${green}admin${plain} by default"
-    #echo -e "Please make sure that this port is not occupied by other procedures,${yellow} And make sure that port 54321 has been released${plain}"
-    #    echo -e "If you want to modify the 54321 to other ports and enter the x-ui command to modify it, you must also ensure that the port you modify is also released"
-    #echo -e ""
-    #echo -e "If it is updated panel, access the panel in your previous way"
-    #echo -e ""
+
     systemctl daemon-reload
     systemctl enable x-ui
     systemctl start x-ui
